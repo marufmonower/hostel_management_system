@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student List</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'hostel/css/style.css' %}" />
+    <!-- Link to your CSS file if you have one -->
+  </head>
+
+  <body>
+    <div class="container">
+      <h1 class="title">Student List</h1>
+      <a href="{% url 'home' %}" class="btn btn-outline-primary">Home</a>
+      <ul class="student-list">
+        {% for student in students %}
+          <li class="student-item">
+            <span class="student-name">{{ student.name }}</span><br />
+            <span class="room-info">Room: {{ student.room }}</span><br />
+            <span class="student-nid">Student NID: {{ student.nid }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+      <a href="{% url 'student_add' %}">Student Add</a>
+    </div>
+  </body>
+</html>

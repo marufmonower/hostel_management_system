@@ -1,0 +1,174 @@
+To create a simple Hostel Management System in Django using class-based views and Django forms, we can include basic functionalities such as adding and managing students, allocating rooms, and tracking occupancy. Below is a high-level outline of the project with code examples.
+
+### Steps:
+
+1. **Set Up the Project and Application**:
+   ```bash
+   django-admin startproject hostel_management
+   cd hostel_management
+   python manage.py startapp hostel
+   ```
+
+2. **Define Models**:
+   In `hostel/models.py`, define models like `Student`, `Room`, and `Booking`.
+
+   ```python
+   from django.db import models
+
+   class Room(models.Model):
+       room_number = models.CharField(max_length=10, unique=True)
+       capacity = models.IntegerField()
+       occupied_beds = models.IntegerField(default=0)
+
+       def __str__(self):
+           return f"Room {self.room_number}"
+
+   class Student(models.Model):
+       name = models.CharField(max_length=100)
+       email = models.EmailField(unique=True)
+       contact_number = models.CharField(max_length=15)
+       room = models.ForeignKey(Room, on_delete=models.SET_NULL, null=True, blank=True)
+
+       def __str__(self):
+           return self.name
+
+   class Booking(models.Model):
+       student = models.ForeignKey(Student, on_delete=models.CASCADE)
+       room = models.ForeignKey(Room, on_delete=models.CASCADE)
+       start_date = models.DateField()
+       end_date = models.DateField()
+
+       def __str__(self):
+           return f"{self.student.name} in {self.room.room_number}"
+   ```
+
+3. **Create Forms**:
+   In `hostel/forms.py`, create forms for adding students, rooms, and bookings.
+
+   ```python
+   from django import forms
+   from .models import Student, Room, Booking
+
+   class StudentForm(forms.ModelForm):
+       class Meta:
+           model = Student
+           fields = ['name', 'email', 'contact_number', 'room']
+
+   class RoomForm(forms.ModelForm):
+       class Meta:
+           model = Room
+           fields = ['room_number', 'capacity']
+
+   class BookingForm(forms.ModelForm):
+       class Meta:
+           model = Booking
+           fields = ['student', 'room', 'start_date', 'end_date']
+   ```
+
+4. **Create Views**:
+   In `hostel/views.py`, use class-based views for managing rooms, students, and bookings.
+
+   ```python
+   from django.urls import reverse_lazy
+   from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+   from .models import Student, Room, Booking
+   from .forms import StudentForm, RoomForm, BookingForm
+
+   class RoomListView(ListView):
+       model = Room
+       template_name = 'hostel/room_list.html'
+       context_object_name = 'rooms'
+
+   class RoomCreateView(CreateView):
+       model = Room
+       form_class = RoomForm
+       template_name = 'hostel/room_form.html'
+       success_url = reverse_lazy('room_list')
+
+   class StudentListView(ListView):
+       model = Student
+       template_name = 'hostel/student_list.html'
+       context_object_name = 'students'
+
+   class StudentCreateView(CreateView):
+       model = Student
+       form_class = StudentForm
+       template_name = 'hostel/student_form.html'
+       success_url = reverse_lazy('student_list')
+
+   class BookingListView(ListView):
+       model = Booking
+       template_name = 'hostel/booking_list.html'
+       context_object_name = 'bookings'
+
+   class BookingCreateView(CreateView):
+       model = Booking
+       form_class = BookingForm
+       template_name = 'hostel/booking_form.html'
+       success_url = reverse_lazy('booking_list')
+   ```
+
+5. **Configure URLs**:
+   In `hostel/urls.py`, define URLs for each view.
+
+   ```python
+   from django.urls import path
+   from .views import RoomListView, RoomCreateView, StudentListView, StudentCreateView, BookingListView, BookingCreateView
+
+   urlpatterns = [
+       path('rooms/', RoomListView.as_view(), name='room_list'),
+       path('rooms/add/', RoomCreateView.as_view(), name='room_add'),
+       path('students/', StudentListView.as_view(), name='student_list'),
+       path('students/add/', StudentCreateView.as_view(), name='student_add'),
+       path('bookings/', BookingListView.as_view(), name='booking_list'),
+       path('bookings/add/', BookingCreateView.as_view(), name='booking_add'),
+   ]
+   ```
+
+6. **Create Templates**:
+   Inside `hostel/templates/hostel`, create templates for listing and creating rooms, students, and bookings.
+
+   - `room_list.html`
+     ```html
+     <h1>Room List</h1>
+     <ul>
+         {% for room in rooms %}
+             <li>{{ room.room_number }} - Capacity: {{ room.capacity }} | Occupied Beds: {{ room.occupied_beds }}</li>
+         {% endfor %}
+     </ul>
+     <a href="{% url 'room_add' %}">Add Room</a>
+     ```
+
+   - `room_form.html`
+     ```html
+     <h1>Add Room</h1>
+     <form method="post">
+         {% csrf_token %}
+         {{ form.as_p }}
+         <button type="submit">Save</button>
+     </form>
+     ```
+
+   Follow similar patterns for `student_list.html`, `student_form.html`, `booking_list.html`, and `booking_form.html`.
+
+7. **Configure Main URLs**:
+   In `hostel_management/urls.py`, include the hostel app URLs.
+
+   ```python
+   from django.contrib import admin
+   from django.urls import path, include
+
+   urlpatterns = [
+       path('admin/', admin.site.urls),
+       path('hostel/', include('hostel.urls')),
+   ]
+   ```
+
+8. **Run Migrations and Test**:
+   ```bash
+   python manage.py makemigrations
+   python manage.py migrate
+   python manage.py runserver
+   ```
+
+This setup will give you a basic hostel management system using Django class-based views and forms. You can further enhance it by adding validations, filtering, and custom logic for room allocation based on capacity and other criteria.

@@ -1,0 +1,9 @@
+<h1>Room List</h1>
+<ul>
+  {% for room in rooms %}
+  <li>
+    {{ room.room_number }} - Capacity: {{ room.capacity }} | Occupied Beds: {{ room.occupied_beds }}
+  </li>
+  {% endfor %}
+</ul>
+<a href="{% url 'room_add'%}">Add Room</a>

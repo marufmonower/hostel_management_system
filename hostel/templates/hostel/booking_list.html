@@ -1,0 +1,10 @@
+<h1>Booking List</h1>
+<ul>
+  {% for booking in bookings %}
+  <li>
+    {{ booking.student }} - Room: {{ booking.room}} | Start Date: {{
+    booking.start_date }} | End Date: {{ booking.end_date }}
+  </li>
+  {% endfor %}
+</ul>
+<a href="{% url 'booking_add' %}">Start Booking</a>

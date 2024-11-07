@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hostel Management System</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'hostel/css/style.css' %}"> <!-- Link to your CSS file if you have one -->
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Hostel Management System</h1>
+        <p>Manage students, rooms, and bookings efficiently.</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="{% url 'room_list' %}">Manage Rooms</a></li>
+            <li><a href="{% url 'student_list' %}">Manage Students</a></li>
+            <li><a href="{% url 'booking_list' %}">Manage Bookings</a></li>
+            <li><a href="{% url 'student_add' %}">Add New Student</a></li>
+            <li><a href="{% url 'room_add' %}">Add New Room</a></li>
+            <li><a href="{% url 'booking_add' %}">New Booking</a></li>
+        </ul>
+    </nav>
+
+    <section>
+        <h2>About the System</h2>
+        <p>This hostel management system is designed to simplify the process of managing hostel resources, including room allocation and student information. Use the links above to navigate through the system’s features.</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Hostel Management System</p>
+    </footer>
+</body>
+</html>
