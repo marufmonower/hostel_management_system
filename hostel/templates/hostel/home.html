@@ -1,36 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hostel Management System</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'hostel/css/style.css' %}"> <!-- Link to your CSS file if you have one -->
-</head>
-<body>
+    <link rel="stylesheet" href="{% static 'hostel/css/style.css' %}" />
+    <!-- Link to your CSS file if you have one -->
+  </head>
+  <body>
     <header>
-        <h1>Welcome to the Hostel Management System</h1>
-        <p>Manage students, rooms, and bookings efficiently.</p>
+      <h1>Welcome to the Hostel Management System</h1>
+      <p>Manage students, rooms, and bookings efficiently.</p>
+      <div class="logout-button-container">
+        <div class="user-info">
+          {% if user.is_authenticated %}
+            <p>Welcome, {{ user.username }}!</p>
+            <!-- Logout form -->
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
+          {% else %}
+            <p>
+              <a href="{% url 'login' %}">Login</a>
+            </p>
+          {% endif %}
+        </div>
+      </div>
     </header>
 
     <nav>
-        <ul>
-            <li><a href="{% url 'room_list' %}">Manage Rooms</a></li>
-            <li><a href="{% url 'student_list' %}">Manage Students</a></li>
-            <li><a href="{% url 'booking_list' %}">Manage Bookings</a></li>
-            <li><a href="{% url 'student_add' %}">Add New Student</a></li>
-            <li><a href="{% url 'room_add' %}">Add New Room</a></li>
-            <li><a href="{% url 'booking_add' %}">New Booking</a></li>
-        </ul>
+      <ul>
+        <li>
+          <a href="{% url 'room_list' %}">Manage Rooms</a>
+        </li>
+        <li>
+          <a href="{% url 'student_list' %}">Manage Students</a>
+        </li>
+        <li>
+          <a href="{% url 'booking_list' %}">Manage Bookings</a>
+        </li>
+        <li>
+          <a href="{% url 'student_add' %}">Add New Student</a>
+        </li>
+        <li>
+          <a href="{% url 'room_add' %}">Add New Room</a>
+        </li>
+        <li>
+          <a href="{% url 'booking_add' %}">New Booking</a>
+        </li>
+      </ul>
     </nav>
 
     <section>
-        <h2>About the System</h2>
-        <p>This hostel management system is designed to simplify the process of managing hostel resources, including room allocation and student information. Use the links above to navigate through the system’s features.</p>
+      <h2>About the System</h2>
+      <p>This hostel management system is designed to simplify the process of managing hostel resources, including room allocation and student information. Use the links above to navigate through the system’s features.</p>
     </section>
 
     <footer>
-        <p>&copy; 2024 Hostel Management System</p>
+      <p>&copy; 2024 Hostel Management System</p>
     </footer>
-</body>
+  </body>
 </html>

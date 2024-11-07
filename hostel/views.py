@@ -28,6 +28,7 @@ class CustomLoginView(LoginView):
 
 
 class CustomLogoutView(LogoutView):
+    http_method_names = ['get', 'post']
     template_name = 'hostel/logout.html'
     next_page = reverse_lazy('home')
 
