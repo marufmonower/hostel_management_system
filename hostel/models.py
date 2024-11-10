@@ -20,7 +20,7 @@ class Student(models.Model):
     
 class Booking(models.Model):
     student = models.ForeignKey(Student,on_delete=models.CASCADE,related_name="student_bookings")
-    room = models.ForeignKey(Student,on_delete=models.CASCADE,related_name="room_bookings")
+    room = models.ForeignKey(Room,on_delete=models.CASCADE,related_name="room_bookings")
     start_date = models.DateField()
     end_date = models.DateField()
     

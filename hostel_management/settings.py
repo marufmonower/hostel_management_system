@@ -128,3 +128,13 @@ LOGIN_REDIRECT_URL = 'home'  # Where to go after login
 LOGOUT_REDIRECT_URL = 'home'  # Where to go after logout
 LOGIN_URL = 'login'  # Redirect to login page if user tries to access a protected page
 
+# settings.py
+
+# Define acceptable date input formats for the whole project
+DATE_INPUT_FORMATS = [
+    '%d/%m/%Y',  # Day/Month/Year format (e.g., 31/01/2024)
+    '%Y-%m-%d',  # Year-Month-Day format (default, e.g., 2024-01-31)
+ #   '%m/%d/%Y',  # Month/Day/Year format (e.g., 01/31/2024)
+]
+
+

@@ -1,10 +1,29 @@
-<h1>Booking List</h1>
-<ul>
+<h1 class="text-2xl font-bold text-center mb-6">Booking List</h1>
+<ul class="space-y-4 mb-6">
   {% for booking in bookings %}
-  <li>
-    {{ booking.student }} - Room: {{ booking.room}} | Start Date: {{
-    booking.start_date }} | End Date: {{ booking.end_date }}
+  <li class="p-4 border border-gray-300 rounded-lg shadow-sm bg-white">
+    <p class="text-lg font-semibold">{{ booking.student }}</p>
+    <p class="text-gray-700">Room: {{ booking.room }}</p>
+    <p class="text-gray-600">Start Date: {{ booking.start_date|date:"d/m/Y" }}</p>
+    <p class="text-gray-600">End Date: {{ booking.end_date|date:"d/m/Y" }}</p>
   </li>
   {% endfor %}
 </ul>
-<a href="{% url 'booking_add' %}">Start Booking</a>
+
+<div class="flex justify-between">
+  <a href="{% url 'home' %}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition">Home</a>
+  <a href="{% url 'booking_add' %}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Start Booking</a>
+</div>
+
+
+
+
+{% comment %} <h1>Booking List</h1>
+<ul>
+  {% for booking in bookings %}
+  <li>
+    {{ booking.student }} - Room: {{ booking.room}} | Start Date: {{ booking.start_date }} | End Date: {{ booking.end_date }}
+  </li>
+  {% endfor %}
+</ul>
+<a href="{% url 'booking_add' %}">Start Booking</a> {% endcomment %}

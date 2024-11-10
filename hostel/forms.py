@@ -26,3 +26,11 @@ class BookingForm(forms.ModelForm):
     class Meta:
         model = Booking
         fields = ['student', 'room', 'start_date', 'end_date']
+        widgets = {
+            'start_date': forms.DateInput(format='%d/%m/%Y', attrs={'type': 'text', 'placeholder': 'DD/MM/YYYY'}),
+            'end_date': forms.DateInput(format='%d/%m/%Y', attrs={'type': 'text', 'placeholder': 'DD/MM/YYYY'}),
+        }
+    def __init__(self, *args, **kwargs):
+        super(BookingForm, self).__init__(*args, **kwargs)
+        self.fields['start_date'].input_formats = ['%d/%m/%Y']
+        self.fields['end_date'].input_formats = ['%d/%m/%Y']

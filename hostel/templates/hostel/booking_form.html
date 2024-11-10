@@ -1,5 +1,11 @@
-<h1>Add Booking</h1>
-<form method="post">
-  {% csrf_token %} {{form.as_p}}
-  <button type="submit">Save</button>
+<h1 class="text-center mb-4">Add Booking</h1>
+<form method="post" class="p-4 border rounded shadow-sm bg-light">
+  {% csrf_token %}
+  <div class="mb-3">{{ form.as_p }}</div>
+  <p class="text-muted">{{ form.start_date.value|date:'d/m/Y' }}</p>
+  <p class="text-muted">{{ form.end_date.value|date:'d/m/Y' }}</p>
+  <div class="d-flex justify-content-between mt-4">
+    <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
+    <button type="submit" class="btn btn-primary">Save</button>
+  </div>
 </form>
