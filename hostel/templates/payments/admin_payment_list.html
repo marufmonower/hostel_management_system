@@ -1,0 +1,39 @@
+<h1 class="text-center mb-4">Payment List</h1>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Student</th>
+      <th>Amount</th>
+      <th>Currency</th>
+      <th>Status</th>
+      <th>Due Date</th>
+      <th>Overdue Amount</th>
+      <th>Payment Date</th>
+      <th>Actions</th>
+    </tr>
+    <thead></thead>
+  </thead>
+  <tbody>
+    {% for payment in payments %}
+      <tr class="{% if payment.is_due %}table-danger{% endif %}">
+        <td>{{ payment.student }}</td>
+        <td>{{ payment.amount }}</td>
+        <td>{{ payment.currency }}</td>
+        <td>{{ payment.status }}</td>
+        <td>{{ payment.due_date|date:'d/m/Y' }}</td>
+        <td>
+          {% if payment.is_due %}
+            {{ payment.overdue_amount }}
+          {% else %}
+            0.00
+          {% endif %}
+        </td>
+        <td>{{ payment.payment_date|date:'d/m/y' }}</td>
+        <td>
+          <a href="{% url 'admin_edit_payment' payment.id %}" class="btn btn-primary btn-sm">Edit</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<a href="{% url 'admin_add_payment' %}" class="btn btn-success mt-3">Add Payment</a>

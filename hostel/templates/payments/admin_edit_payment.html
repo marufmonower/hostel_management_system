@@ -1,0 +1,7 @@
+<h1 class="text-center mb-4">Edit Payment</h1>
+<form method="post" class="p-4 border rounded shadow-sm bg-light">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Update Payment</button>
+</form>
+<a href="{% url 'admin_payment_list' %}" class="btn btn-secondary mt-3">Back to Payment List</a>

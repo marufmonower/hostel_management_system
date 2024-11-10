@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from .models import Student, Room, Booking
-from .forms import StudentForm, RoomForm, BookingForm
+from .models import Student, Room, Booking, Payment
+from .forms import StudentForm, RoomForm, BookingForm, PaymentForm
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from .forms import UserRegistrationForm
@@ -81,3 +81,26 @@ class BookingCreateView(CreateView):
     form_class = BookingForm
     template_name = 'hostel/booking_form.html'
     success_url = reverse_lazy('booking_list')
+
+
+@method_decorator(login_required, name='dispatch')
+class PaymentListView(ListView):
+    model = Payment
+    template_name = 'payments/admin_payment_list.html'
+    context_object_name = 'payments'
+
+
+@method_decorator(login_required, name='dispatch')
+class PaymentCreateView(CreateView):
+    model = Payment
+    form_class = PaymentForm
+    template_name = 'payments/admin_add_payment.html'
+    success_url = reverse_lazy('admin_payment_list')
+
+
+@method_decorator(login_required, name='dispatch')
+class PaymentUpdateView(UpdateView):
+    model = Payment
+    form_class = PaymentForm
+    template_name = 'payments/admin_edit_payment.html'
+    success_url = reverse_lazy('admin_payment_list')

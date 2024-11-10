@@ -1,5 +1,5 @@
 from django import forms
-from .models import Room, Student, Booking
+from .models import Room, Student, Booking,Payment
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -34,3 +34,12 @@ class BookingForm(forms.ModelForm):
         super(BookingForm, self).__init__(*args, **kwargs)
         self.fields['start_date'].input_formats = ['%d/%m/%Y']
         self.fields['end_date'].input_formats = ['%d/%m/%Y']
+
+class PaymentForm(forms.ModelForm):
+    class Meta:
+        model = Payment
+        fields = ['student','amount','currency','status','due_date','reference']
+        widgets = {
+            'amount':forms.NumberInput(attrs={'step': '0.01'}),
+            'due_date': forms.DateInput(attrs={'type': 'date'}),
+        }
