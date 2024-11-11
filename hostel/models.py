@@ -47,6 +47,11 @@ class Payment(models.Model):
     reference = models.CharField(max_length=255, blank=True, null=True)
     room_number = models.CharField(max_length=10, blank=True, null=True)
 
+    @property
+    def monthcode(self):
+        # Returns the monthcode as YYYY-MM format
+        return self.payment_date.strftime('%Y-%m')
+
     def save(self, *args, **kwargs):
         if not self.room_number:
             try:

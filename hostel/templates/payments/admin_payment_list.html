@@ -9,7 +9,22 @@
   </head>
   <body>
     <div class="container mt-5">
+      <a href="{% url 'home' %}" class="btn btn-outline-dark mb-4">Home</a>
+
       <h1 class="text-center mb-4">Payment List</h1>
+         <!-- Filter form for selecting monthcode -->
+      <form method="get" class="mb-4">
+        <label for="monthcode">Select Month:</label>
+        <select name="monthcode" id="monthcode" class="form-select w-auto d-inline-block">
+          <option value="">All</option>
+          {% for monthcode in monthcodes %}
+            <option value="{{ monthcode }}" {% if request.GET.monthcode == monthcode %}selected{% endif %}>
+              {{ monthcode }}
+            </option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Filter</button>
+      </form>
       <table class="table table-striped">
         <thead>
           <tr>

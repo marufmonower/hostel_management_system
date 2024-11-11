@@ -9,6 +9,7 @@ from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.db.models.functions import TruncMonth
 
 
 def register(request):
@@ -88,6 +89,27 @@ class PaymentListView(ListView):
     model = Payment
     template_name = 'payments/admin_payment_list.html'
     context_object_name = 'payments'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        monthcode = self.request.GET.get('monthcode')
+        if monthcode:
+            queryset = queryset.filter(payment_date__startswith=monthcode)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Generate a list of unique monthcodes
+        monthcodes = Payment.objects.annotate(month=TruncMonth(
+            'payment_date')).values_list('month', flat=True).distinct()
+        formatted_monthcodes = [month.strftime(
+            '%Y-%m') for month in monthcodes if month]
+
+        # Pass the list of monthcodes to the template
+        context['monthcodes'] = formatted_monthcodes
+        return context
 
 
 @method_decorator(login_required, name='dispatch')
