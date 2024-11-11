@@ -14,6 +14,7 @@
         <thead>
           <tr>
             <th>Student</th>
+            <th>Room</th>
             <th>Amount</th>
             <th>Currency</th>
             <th>Status</th>
@@ -27,6 +28,7 @@
           {% for payment in payments %}
             <tr class="{% if payment.is_due %}table-danger{% endif %}">
               <td>{{ payment.student }}</td>
+              <td>{{ payment.room_number }}</td>
               <td>{{ payment.amount }}</td>
               <td>{{ payment.currency }}</td>
               <td>{{ payment.status }}</td>

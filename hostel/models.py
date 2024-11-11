@@ -45,8 +45,16 @@ class Payment(models.Model):
     is_due = models.BooleanField(default=False)
     overdue_amount = models.DecimalField(max_digits=10, decimal_places=2)
     reference = models.CharField(max_length=255, blank=True, null=True)
+    room_number = models.CharField(max_length=10, blank=True, null=True)
 
     def save(self, *args, **kwargs):
+        if not self.room_number:
+            try:
+                hostel_student = Student.objects.get(name=self.student)
+                self.room_number = hostel_student.room
+            except Student.DoesNotExist:
+                self.room_number = 'Unknown'  # Default value if the student is not found
+
         if self.due_date and date.today() > self.due_date and self.status != 'Completed':
             self.status = 'Overdue'
             self.is_due = True
