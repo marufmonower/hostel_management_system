@@ -1,7 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import Student, Room, Booking, Payment
-from .forms import StudentForm, RoomForm, BookingForm, PaymentForm
+from .forms import StudentForm, RoomForm, BookingForm, PaymentForm, EditRoomForm
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from .forms import UserRegistrationForm
@@ -59,6 +59,26 @@ class StudentListView(ListView):
     model = Student
     template_name = 'hostel/student_list.html'
     context_object_name = 'students'
+    form_class = EditRoomForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.form_class()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        student_id = request.POST.get('student_id')
+        student = get_object_or_404(Student, id=student_id)
+        form = self.form_class(request.POST, instance=student)
+
+        if form.is_valid():
+            form.save()
+            return redirect('student_list')
+
+        students = self.get_queryset()
+        context = self.get_context_data()
+        context['form'] = form
+        return self.render_to_response(context)
 
 
 @method_decorator(login_required, name='dispatch')

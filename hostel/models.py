@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import date
+from django.contrib.auth.models import User
 
 
 class Room (models.Model):
@@ -40,12 +41,15 @@ class Payment(models.Model):
     currency = models.CharField(max_length=3, default='BDT')
     status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), (
         'Completed', 'Completed'), ('Overdue', 'Overdue')], default='Pending')
-    payment_date = models.DateTimeField(auto_now_add=True)
+    payment_date = models.DateTimeField(null=True, blank=True)
     due_date = models.DateField(null=True, blank=True)
     is_due = models.BooleanField(default=False)
     overdue_amount = models.DecimalField(max_digits=10, decimal_places=2)
     reference = models.CharField(max_length=255, blank=True, null=True)
     room_number = models.CharField(max_length=10, blank=True, null=True)
+    oprstamp = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
     @property
     def monthcode(self):

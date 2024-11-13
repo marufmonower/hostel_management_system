@@ -42,9 +42,19 @@ class BookingForm(forms.ModelForm):
 class PaymentForm(forms.ModelForm):
     class Meta:
         model = Payment
-        fields = ['student', #'room', 
-                  'amount','currency', 'status', 'due_date', 'reference']
+        fields = ['student',  # 'room',
+                  'amount', 'currency', 'payment_date', 'status', 'due_date', 'reference']
         widgets = {
             'amount': forms.NumberInput(attrs={'step': '0.01'}),
             'due_date': forms.DateInput(attrs={'type': 'date'}),
+            'payment_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+
+class EditRoomForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = ['room']
+        widgets = {
+            'room': forms.Select(attrs={'class': 'form-control'}),
         }
