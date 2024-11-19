@@ -41,7 +41,7 @@
               <div class="input-group">
                 <select name="room" class="form-select form-select-sm">
                   {% for room in form.fields.room.queryset %}
-                    <option value="{{ room.id }}" {% if student.room and student.room.id == room.id %}selected{% endif %}>
+                  <option value="{{ room.id }}" {% if student.room and student.room.id == room.id %}selected{% endif %}>
                       {{ room.room_number }}
                     </option>
                   {% endfor %}
@@ -51,6 +51,13 @@
                 </button>
               </div>
             </form>
+            <!-- Payment Form -->
+                <form method="post" action="" class="d-inline">
+                  {% csrf_token %}
+                  <input type="hidden" name="student_id" value="{{ student.id }}">
+                  {{ PaymentForm.amount }}
+                  <button type="submit" class="btn btn-primary btn-sm">Add Payment</button>
+                </form>
           </li>
         {% endfor %}
       </ul>

@@ -62,11 +62,23 @@ class StudentListView(ListView):
     form_class = EditRoomForm
 
     def get_context_data(self, **kwargs):
+        
+         #Ensure object_list is set in POST requests
+        if not hasattr(self, 'object_list'):
+            self.object_list = self.get_queryset()
         context = super().get_context_data(**kwargs)
         context['form'] = self.form_class()
+        context['PaymentForm'] = PaymentForm()
         return context
 
     def post(self, request, *args, **kwargs):
+
+        if 'room' in request.POST:
+            return self.update_room(request)
+        elif 'amount' in request.POST:
+            return self.add_payment(request)
+
+    def update_room(self, request):
         student_id = request.POST.get('student_id')
         student = get_object_or_404(Student, id=student_id)
         form = self.form_class(request.POST, instance=student)
@@ -75,9 +87,24 @@ class StudentListView(ListView):
             form.save()
             return redirect('student_list')
 
-        students = self.get_queryset()
+       # students = self.get_queryset()
         context = self.get_context_data()
         context['form'] = form
+        return self.render_to_response(context)
+
+    def add_payment(self, request):
+        payment_form = PaymentForm(request.POST)
+        student_id = request.POST.get('student_id')
+
+        if payment_form.is_valid() and student_id:
+            student = get_object_or_404(Student, id=student_id)
+            payment = payment_form.save(commit=False)
+            payment.student = student
+            payment.save()
+            return redirect('student_list')
+
+        context = self.get_context_data()
+        context['form'] = payment_form
         return self.render_to_response(context)
 
 
