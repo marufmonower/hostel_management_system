@@ -76,3 +76,20 @@ class Payment(models.Model):
 
     def __str__(self):
         return f"{self.student.name}-{self.amount}{self.currency}"
+
+class Expenditure(models.Model):
+    date = models.DateField()
+    description = models.CharField(max_length=255)
+    amount = models.DecimalField(max_digits=10,decimal_places=2)
+    category = models.CharField(max_length=100,choices=[
+        ('Maintenance', 'Maintenance'),
+        ('Electric_bill', 'Electric_bill'),
+        ('Swiper_bill', 'Swiper_bill'),
+        ('Paper_bill','Paper_bill'),
+        ('Internet_bill','Internet_bill'),
+        ('Miscellaneous', 'Miscellaneous')
+    ])
+    
+    def __str__(self):
+        return f"{self.date}-{self.description}-{self.amount}"
+    

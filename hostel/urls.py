@@ -16,4 +16,7 @@ urlpatterns = [
     path('payments/', PaymentListView.as_view(), name='admin_payment_list'),
     path('payments/add', PaymentCreateView.as_view(), name='admin_add_payment'),
     path('payments/edit/<int:pk>', PaymentUpdateView.as_view(), name='admin_edit_payment'),
+    path('expenditures/', views.expenditure_list, name='expenditure_list'),
+    path('expenditures/add/', views.add_expenditure, name='add_expenditure'),
+    path('expenditures/summary/', views.expenditure_summary, name='expenditure_summary'),
 ]

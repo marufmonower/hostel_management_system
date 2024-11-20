@@ -1,5 +1,5 @@
 from django import forms
-from .models import Room, Student, Booking, Payment
+from .models import Room, Student, Booking, Payment,Expenditure
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -58,3 +58,12 @@ class EditRoomForm(forms.ModelForm):
         widgets = {
             'room': forms.Select(attrs={'class': 'form-control'}),
         }
+
+class ExpenditureForm(forms.ModelForm):
+    class Meta:
+        model = Expenditure
+        fields = ['date','description','amount','category']
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'}),
+        }
+        

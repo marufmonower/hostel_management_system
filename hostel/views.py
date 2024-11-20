@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from .models import Student, Room, Booking, Payment
-from .forms import StudentForm, RoomForm, BookingForm, PaymentForm, EditRoomForm
+from .models import Student, Room, Booking, Payment, Expenditure
+from .forms import StudentForm, RoomForm, BookingForm, PaymentForm, EditRoomForm, ExpenditureForm
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from .forms import UserRegistrationForm
@@ -10,6 +10,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db.models.functions import TruncMonth
+from django.db.models import Sum
 
 
 def register(request):
@@ -62,8 +63,8 @@ class StudentListView(ListView):
     form_class = EditRoomForm
 
     def get_context_data(self, **kwargs):
-        
-         #Ensure object_list is set in POST requests
+
+        # Ensure object_list is set in POST requests
         if not hasattr(self, 'object_list'):
             self.object_list = self.get_queryset()
         context = super().get_context_data(**kwargs)
@@ -173,3 +174,43 @@ class PaymentUpdateView(UpdateView):
     form_class = PaymentForm
     template_name = 'payments/admin_edit_payment.html'
     success_url = reverse_lazy('admin_payment_list')
+
+
+@login_required
+def expenditure_list(request):
+    expenditures = Expenditure.objects.all().order_by('-date')
+
+    category = request.GET.get('category', '')
+    if category:
+        expenditures = expenditures.filter(category=category)
+
+    search_query = request.GET.get('q', '')
+    if search_query:
+        expenditures = expenditures.filter(description__icontains=search_query)
+
+    return render(request, 'hostel/expenditure_list.html',
+                  {'expenditures': expenditures,
+                   'categories': Expenditure._meta.get_field('category').choices
+                   })
+
+
+def add_expenditure(request):
+    if request.method == 'POST':
+        form = ExpenditureForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('expenditure_list')
+    else:
+        form = ExpenditureForm()
+    return render(request, 'hostel/add_expenditure.html', {'form': form})
+
+
+def expenditure_summary(request):
+    total_expenditure = Expenditure.objects.aggregate(Sum('amount'))['amount__sum']or 0
+    category_wise = Expenditure.objects.values(
+        'category').annotate(total=Sum('amount'))
+
+    return render(request, 'hostel/expenditure_summary.html', {
+        'total_expenditure': total_expenditure,
+        'category_wise': category_wise
+    })
