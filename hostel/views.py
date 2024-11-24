@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from .models import Student, Room, Booking, Payment, Expenditure
+from .models import Student, Room, Booking, Payment, Income, Expenditure
 from .forms import StudentForm, RoomForm, BookingForm, PaymentForm, EditRoomForm, ExpenditureForm
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
@@ -187,13 +187,18 @@ def expenditure_list(request):
     search_query = request.GET.get('q', '')
     if search_query:
         expenditures = expenditures.filter(description__icontains=search_query)
+    
+     # Calculate the total amount
+    total_amount = expenditures.aggregate(Sum('amount'))['amount__sum'] or 0
 
     return render(request, 'hostel/expenditure_list.html',
                   {'expenditures': expenditures,
-                   'categories': Expenditure._meta.get_field('category').choices
+                   'categories': Expenditure._meta.get_field('category').choices,
+                   'total_amount': total_amount,
                    })
 
 
+@login_required
 def add_expenditure(request):
     if request.method == 'POST':
         form = ExpenditureForm(request.POST)
@@ -205,12 +210,35 @@ def add_expenditure(request):
     return render(request, 'hostel/add_expenditure.html', {'form': form})
 
 
+@login_required
 def expenditure_summary(request):
-    total_expenditure = Expenditure.objects.aggregate(Sum('amount'))['amount__sum']or 0
+    total_expenditure = Expenditure.objects.aggregate(Sum('amount'))[
+        'amount__sum'] or 0
     category_wise = Expenditure.objects.values(
         'category').annotate(total=Sum('amount'))
 
     return render(request, 'hostel/expenditure_summary.html', {
         'total_expenditure': total_expenditure,
         'category_wise': category_wise
+    })
+
+
+@login_required
+def income_list(request):
+    incomes = Income.objects.all().order_by('-created_at')
+    return render(request, 'income_list.html', {'incomes': incomes})
+
+
+@login_required
+def profit_summary(request):
+    total_income = Income.objects.aggregate(Sum('amount__amount'))[
+        'amount__amount__sum'] or 0
+    total_expenditure = Expenditure.objects.aggregate(Sum('amount'))[
+        'amount__sum'] or 0
+    profit = total_income - total_expenditure
+
+    return render(request, 'hostel/profit_summary.html', {
+        'total_income': total_income,
+        'total_expenditure': total_expenditure,
+        'profit': profit,
     })

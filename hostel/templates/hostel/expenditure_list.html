@@ -64,6 +64,11 @@
                 <td>{{ expenditure.amount }}</td>
               </tr>
             {% endfor %}
+             <!-- Total Row -->
+             <tr class="table-primary">
+              <td colspan="3"><strong>Total Amount</strong></td>
+              <td><strong>{{ total_amount }}</strong></td>
+            </tr>
           </tbody>
         </table>
       </div>

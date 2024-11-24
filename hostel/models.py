@@ -50,6 +50,7 @@ class Payment(models.Model):
     oprstamp = models.ForeignKey(
         User, on_delete=models.SET_NULL, null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    transaction_id = models.CharField(max_length=255, blank=True, null=True)
 
     @property
     def monthcode(self):
@@ -77,19 +78,33 @@ class Payment(models.Model):
     def __str__(self):
         return f"{self.student.name}-{self.amount}{self.currency}"
 
+
 class Expenditure(models.Model):
     date = models.DateField()
     description = models.CharField(max_length=255)
+    #amount = models.OneToOneField(Payment, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10,decimal_places=2)
-    category = models.CharField(max_length=100,choices=[
+    category = models.CharField(max_length=100, choices=[
         ('Maintenance', 'Maintenance'),
         ('Electric_bill', 'Electric_bill'),
         ('Swiper_bill', 'Swiper_bill'),
-        ('Paper_bill','Paper_bill'),
-        ('Internet_bill','Internet_bill'),
+        ('Paper_bill', 'Paper_bill'),
+        ('Internet_bill', 'Internet_bill'),
         ('Miscellaneous', 'Miscellaneous')
     ])
-    
+    created_at = models.DateTimeField(auto_now_add=True)
+
     def __str__(self):
         return f"{self.date}-{self.description}-{self.amount}"
-    
+
+
+class Income(models.Model):
+    amount = models.OneToOneField(Payment, on_delete=models.CASCADE)
+    category = models.CharField(max_length=100, choices=[
+        ('Rent', 'Rent'),
+        ('Other', 'Other'),
+    ])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Income from {self.payment.description} - {self.payment.amount}"
