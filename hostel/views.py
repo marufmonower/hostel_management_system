@@ -188,13 +188,26 @@ def expenditure_list(request):
     if search_query:
         expenditures = expenditures.filter(description__icontains=search_query)
     
-     # Calculate the total amount
+    # Apply monthcode filter
+    monthcode = request.GET.get('monthcode', '')
+    if monthcode:
+        expenditures = expenditures.filter(date__startswith=monthcode)  # Adjust field name as necessary
+
+     # Generate unique monthcodes
+    monthcodes = Expenditure.objects.annotate(
+        month=TruncMonth('date')
+    ).values_list('month', flat=True).distinct()
+    formatted_monthcodes = [month.strftime(
+        '%Y-%m') for month in monthcodes if month]
+
+    # Calculate the total amount
     total_amount = expenditures.aggregate(Sum('amount'))['amount__sum'] or 0
 
     return render(request, 'hostel/expenditure_list.html',
                   {'expenditures': expenditures,
                    'categories': Expenditure._meta.get_field('category').choices,
                    'total_amount': total_amount,
+                   'monthcodes': formatted_monthcodes,
                    })
 
 

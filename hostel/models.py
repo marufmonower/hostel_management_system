@@ -93,6 +93,11 @@ class Expenditure(models.Model):
         ('Miscellaneous', 'Miscellaneous')
     ])
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    @property
+    def monthcode(self):
+        # Returns the monthcode as YYYY-MM format
+        return self.date.strftime('%Y-%m')
 
     def __str__(self):
         return f"{self.date}-{self.description}-{self.amount}"
