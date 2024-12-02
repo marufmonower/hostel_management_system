@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
 from django.contrib.auth.models import User
+import calendar
 
 
 class Room (models.Model):
@@ -73,6 +74,12 @@ class Payment(models.Model):
         else:
             self.is_due = False
             self.overdue_amount = 0.00
+
+        if self.payment_date:
+            last_day_of_month = calendar.monthrange(
+                self.payment_date.year, self.payment_date.month)[1]
+            self.due_date = self.payment_date.replace(day=last_day_of_month)
+
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -82,8 +89,8 @@ class Payment(models.Model):
 class Expenditure(models.Model):
     date = models.DateField()
     description = models.CharField(max_length=255)
-    #amount = models.OneToOneField(Payment, on_delete=models.CASCADE)
-    amount = models.DecimalField(max_digits=10,decimal_places=2)
+    # amount = models.OneToOneField(Payment, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
     category = models.CharField(max_length=100, choices=[
         ('Maintenance', 'Maintenance'),
         ('Electric_bill', 'Electric_bill'),
@@ -93,7 +100,7 @@ class Expenditure(models.Model):
         ('Miscellaneous', 'Miscellaneous')
     ])
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     @property
     def monthcode(self):
         # Returns the monthcode as YYYY-MM format
@@ -110,6 +117,11 @@ class Income(models.Model):
         ('Other', 'Other'),
     ])
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def monthcode(self):
+        # Returns the monthcode as YYYY-MM format
+        return self.date.strftime('%Y-%m')
 
     def __str__(self):
         return f"Income from {self.payment.description} - {self.payment.amount}"

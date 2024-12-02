@@ -187,11 +187,11 @@ def expenditure_list(request):
     search_query = request.GET.get('q', '')
     if search_query:
         expenditures = expenditures.filter(description__icontains=search_query)
-    
+
     # Apply monthcode filter
     monthcode = request.GET.get('monthcode', '')
     if monthcode:
-        expenditures = expenditures.filter(date__startswith=monthcode)  # Adjust field name as necessary
+        expenditures = expenditures.filter(date__startswith=monthcode)
 
      # Generate unique monthcodes
     monthcodes = Expenditure.objects.annotate(
@@ -244,14 +244,32 @@ def income_list(request):
 
 @login_required
 def profit_summary(request):
+
     total_income = Income.objects.aggregate(Sum('amount__amount'))[
         'amount__amount__sum'] or 0
     total_expenditure = Expenditure.objects.aggregate(Sum('amount'))[
         'amount__sum'] or 0
+
+    # Apply monthcode filter
+    monthcode = request.GET.get('monthcode', '')
+    if monthcode:
+        total_income = Income.objects.filter(created_at__startswith=monthcode).aggregate(Sum('amount__amount'))[
+            'amount__amount__sum'] or 0
+        total_expenditure = Expenditure.objects.filter(created_at__startswith=monthcode).aggregate(Sum('amount'))[
+            'amount__sum'] or 0
+
+    # Generate unique monthcodes
+    monthcodes = Expenditure.objects.annotate(
+        month=TruncMonth('date')
+    ).values_list('month', flat=True).distinct()
+    formatted_monthcodes = [month.strftime(
+        '%Y-%m') for month in monthcodes if month]
+
     profit = total_income - total_expenditure
 
     return render(request, 'hostel/profit_summary.html', {
         'total_income': total_income,
         'total_expenditure': total_expenditure,
         'profit': profit,
+        'monthcodes': formatted_monthcodes,
     })
