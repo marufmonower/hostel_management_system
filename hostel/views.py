@@ -10,7 +10,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.db.models.functions import TruncMonth
-from django.db.models import Sum
+from django.db.models import Sum, Max, F
+from datetime import date
 
 
 def register(request):
@@ -273,3 +274,27 @@ def profit_summary(request):
         'profit': profit,
         'monthcodes': formatted_monthcodes,
     })
+
+
+@login_required
+def get_overdue_payments(request):
+
+    # Annotate with the latest payment date (if applicable)
+    payments_with_status = Payment.objects.annotate(
+        last_payment_date=Max('payment_date')
+    ).filter(
+        due_date__lt=date.today(),  # Due date is earlier than today
+        status__in=['Pending', 'Overdue']  # 'Unpaid'  # Only unpaid payments
+    ).select_related('student', 'student__room')  # Ensure relationships exist
+
+    # Calculate the total overdue amount
+    total_due = payments_with_status.aggregate(
+        total=Sum('overdue_amount')
+    )['total'] or 0
+
+    context = {
+        'payments_with_status': payments_with_status,
+        'total_due': total_due,
+    }
+
+    return render(request, 'hostel/overdue_report.html', context)

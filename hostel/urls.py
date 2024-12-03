@@ -20,4 +20,5 @@ urlpatterns = [
     path('expenditures/add/', views.add_expenditure, name='add_expenditure'),
     path('expenditures/summary/', views.expenditure_summary, name='expenditure_summary'),
     path('profit/', views.profit_summary, name='profit_summary'),
+    path('overdue_payments/', views.get_overdue_payments, name='overdue_payments'),
 ]

@@ -66,7 +66,8 @@ class Payment(models.Model):
             except Student.DoesNotExist:
                 self.room_number = 'Unknown'  # Default value if the student is not found
 
-        if self.due_date and date.today() > self.due_date and self.status != 'Completed':
+        #if self.due_date and date.today() > self.due_date and self.status != 'Completed':
+        if self.due_date < date.today() and self.status != 'Completed':
             self.status = 'Overdue'
             self.is_due = True
         # set overdue_amount to the total amount if overdue
