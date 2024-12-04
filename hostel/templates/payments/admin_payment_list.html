@@ -25,6 +25,8 @@
         </select>
         <button type="submit" class="btn btn-primary">Filter</button>
       </form>
+      <a href="{% url 'admin_add_payment' %}" class="btn btn-success mt-3">Add Payment</a>
+      <a href="{% url 'overdue_payments' %}" class="btn btn-success mt-3">Overdue Amount</a>
       <table class="table table-striped">
         <thead>
           <tr>
@@ -63,7 +65,8 @@
           {% endfor %}
         </tbody>
       </table>
-      <a href="{% url 'admin_add_payment' %}" class="btn btn-success mt-3">Add Payment</a>
+      {% comment %} <a href="{% url 'admin_add_payment' %}" class="btn btn-success mt-3">Add Payment</a>
+      <a href="{% url 'overdue_payments' %}" class="btn btn-success mt-3">Overdue Amount</a> {% endcomment %}
     </div>
   </body>
 </html>

@@ -66,8 +66,13 @@ class Payment(models.Model):
             except Student.DoesNotExist:
                 self.room_number = 'Unknown'  # Default value if the student is not found
 
-        #if self.due_date and date.today() > self.due_date and self.status != 'Completed':
-        if self.due_date < date.today() and self.status != 'Completed':
+        if self.payment_date:
+            last_day_of_month = calendar.monthrange(
+                self.payment_date.year, self.payment_date.month)[1]
+            self.due_date = self.payment_date.replace(day=last_day_of_month)
+
+        if self.due_date and date.today() > self.due_date.date() and self.status != 'Completed':
+            # if self.due_date < date.today() and self.status != 'Completed':
             self.status = 'Overdue'
             self.is_due = True
         # set overdue_amount to the total amount if overdue
@@ -75,11 +80,6 @@ class Payment(models.Model):
         else:
             self.is_due = False
             self.overdue_amount = 0.00
-
-        if self.payment_date:
-            last_day_of_month = calendar.monthrange(
-                self.payment_date.year, self.payment_date.month)[1]
-            self.due_date = self.payment_date.replace(day=last_day_of_month)
 
         super().save(*args, **kwargs)
 
