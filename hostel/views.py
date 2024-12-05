@@ -168,6 +168,30 @@ class PaymentCreateView(CreateView):
     template_name = 'payments/admin_add_payment.html'
     success_url = reverse_lazy('admin_payment_list')
 
+    def get_initial(self):
+        initial = super().get_initial()
+
+        overdue_amount = 0
+
+        student_id = self.request.GET.get('student')
+        if student_id:
+            overdue_amount = Payment.objects.filter(
+                student_id=student_id,
+                due_date__lt=date.today(),
+                status__in=['Pending', 'Overdue']
+            ).aggregate(total_due=Sum('overdue_amount'))['total_due'] or 0
+
+        initial['overdue_amount'] = overdue_amount
+        return initial
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # Pre-select the student if provided in GET request
+        student_id = self.request.GET.get('student')
+        if student_id:
+            kwargs['initial'] = kwargs.get('initial', {})
+            kwargs['initial']['student'] = get_object_or_404(Student, id=student_id)
+        return kwargs
 
 @method_decorator(login_required, name='dispatch')
 class PaymentUpdateView(UpdateView):

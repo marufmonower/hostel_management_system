@@ -40,15 +40,32 @@ class BookingForm(forms.ModelForm):
 
 
 class PaymentForm(forms.ModelForm):
+    overdue_amount = forms.DecimalField(
+        required=False,
+        widget=forms.TextInput(attrs={'readonly': 'readonly', 'class': 'form-control'}),
+        label="Overdue Amount (Read-only)"
+    )
     class Meta:
         model = Payment
         fields = ['student',  # 'room',
-                  'amount', 'currency', 'payment_date', 'status', 'due_date', 'reference']
+                  'amount', 'currency', 'payment_date', 'status', 'due_date', 'reference','overdue_amount']
         widgets = {
             'amount': forms.NumberInput(attrs={'step': '0.01'}),
             'due_date': forms.DateInput(attrs={'type': 'date'}),
             'payment_date': forms.DateInput(attrs={'type': 'date'}),
         }
+    def __init__(self, *args, **kwargs):
+        student_id = kwargs.pop('student_id', None)  # Get the selected student from the view
+        super().__init__(*args, **kwargs)
+
+        # Add an onchange event to reload the form with the selected student
+        self.fields['student'].widget.attrs.update({
+            'onchange': "location.href='?student=' + this.value;",
+        })
+
+        # Set the initial selected student (if available)
+        if student_id:
+            self.fields['student'].initial = student_id
 
 
 class EditRoomForm(forms.ModelForm):
