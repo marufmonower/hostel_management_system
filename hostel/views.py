@@ -12,7 +12,8 @@ from django.utils.decorators import method_decorator
 from django.db.models.functions import TruncMonth
 from django.db.models import Sum, Max, F
 from datetime import date
-
+from django.contrib import messages
+from django.http import Http404
 
 def register(request):
     if request.method == 'POST':
@@ -95,18 +96,30 @@ class StudentListView(ListView):
         return self.render_to_response(context)
 
     def add_payment(self, request):
-        payment_form = PaymentForm(request.POST)
-        student_id = request.POST.get('student_id')
+        if request.method == "POST":
+            payment_form = PaymentForm(request.POST)
+            student_id = request.POST.get('student_id')
 
-        if payment_form.is_valid() and student_id:
-            student = get_object_or_404(Student, id=student_id)
-            payment = payment_form.save(commit=False)
-            payment.student = student
-            payment.save()
-            return redirect('student_list')
+            if payment_form.is_valid() and student_id:
+                try:
+                    student = get_object_or_404(Student, id=student_id)
+                    payment = payment_form.save(commit=False)
+                    payment.student = student
+                    payment.save()
+                    messages.success(request, "Payment added successfully!")
+                    return redirect('student_list')
+                except Http404:
+                    messages.error(request, "Student not found.")
+
+            messages.error(
+                request, "Invalid form submission. Please check the details.")
+
+        else:
+            payment_form = PaymentForm()
 
         context = self.get_context_data()
         context['form'] = payment_form
+        context['student_id'] = request.POST.get('student_id', None)
         return self.render_to_response(context)
 
 
@@ -183,15 +196,17 @@ class PaymentCreateView(CreateView):
 
         initial['overdue_amount'] = overdue_amount
         return initial
-    
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         # Pre-select the student if provided in GET request
         student_id = self.request.GET.get('student')
         if student_id:
             kwargs['initial'] = kwargs.get('initial', {})
-            kwargs['initial']['student'] = get_object_or_404(Student, id=student_id)
+            kwargs['initial']['student'] = get_object_or_404(
+                Student, id=student_id)
         return kwargs
+
 
 @method_decorator(login_required, name='dispatch')
 class PaymentUpdateView(UpdateView):
@@ -308,7 +323,7 @@ def get_overdue_payments(request):
         last_payment_date=Max('payment_date')
     ).filter(
         due_date__lt=date.today(),  # Due date is earlier than today
-        status__in=['Pending', 'Overdue']  # 'Unpaid'  # Only unpaid payments
+        status__in=['Pending', 'Overdue']
     ).select_related('student', 'student__room')  # Ensure relationships exist
 
     # Calculate the total overdue amount
