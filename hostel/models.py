@@ -118,11 +118,13 @@ class Income(models.Model):
         ('Other', 'Other'),
     ])
     created_at = models.DateTimeField(auto_now_add=True)
+    #payment_date = models.ForeignKey(Payment, on_delete=models.CASCADE, related_name='income_payment_date')
+    payment_date = models.DateTimeField(null=True, blank=True)
 
     @property
     def monthcode(self):
         # Returns the monthcode as YYYY-MM format
-        return self.date.strftime('%Y-%m')
+        return self.payment_date.strftime('%Y-%m')
 
     def __str__(self):
         return f"Income from {self.payment.description} - {self.payment.amount}"

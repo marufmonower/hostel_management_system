@@ -289,11 +289,12 @@ def profit_summary(request):
         'amount__amount__sum'] or 0
     total_expenditure = Expenditure.objects.aggregate(Sum('amount'))[
         'amount__sum'] or 0
+    #payment_date = Payment.objects.filter
 
     # Apply monthcode filter
     monthcode = request.GET.get('monthcode', '')
     if monthcode:
-        total_income = Income.objects.filter(created_at__startswith=monthcode).aggregate(Sum('amount__amount'))[
+        total_income = Income.objects.filter(payment_date__startswith=monthcode).aggregate(Sum('amount__amount'))[
             'amount__amount__sum'] or 0
         total_expenditure = Expenditure.objects.filter(created_at__startswith=monthcode).aggregate(Sum('amount'))[
             'amount__sum'] or 0

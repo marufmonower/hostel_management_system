@@ -10,7 +10,7 @@ def associate_payment(sender, instance, created, **kwargs):
         # print(f"instance_status{instance.status.lower()}")
 
         if 'completed' in instance.status.lower():
-            Income.objects.create(amount=instance, category='Rent')
+            Income.objects.create(amount=instance, category='Rent',payment_date=instance.payment_date)
         else:
             Expenditure.objects.create(
                 date=instance.payment_date,  # Set the date from Payment
