@@ -1,6 +1,6 @@
 from django.urls import path
 from .import views
-from .views import register,CustomLogoutView,RoomListView, RoomCreateView, StudentListView, StudentCreateView, BookingListView, BookingCreateView, CustomLoginView,PaymentListView,PaymentCreateView,PaymentUpdateView
+from .views import register,CustomLogoutView,RoomListView, RoomCreateView, StudentListView, StudentCreateView, BookingListView, BookingCreateView, CustomLoginView,PaymentListView,PaymentCreateView,PaymentUpdateView,StudentContactListView
 
 urlpatterns = [
     path('register/', register, name='register'),
@@ -21,4 +21,5 @@ urlpatterns = [
     path('expenditures/summary/', views.expenditure_summary, name='expenditure_summary'),
     path('profit/', views.profit_summary, name='profit_summary'),
     path('overdue_payments/', views.get_overdue_payments, name='overdue_payments'),
+    path('contacts/',StudentContactListView.as_view(),name='student-contact-list'),
 ]

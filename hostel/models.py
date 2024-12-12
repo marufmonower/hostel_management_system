@@ -128,3 +128,5 @@ class Income(models.Model):
 
     def __str__(self):
         return f"Income from {self.payment.description} - {self.payment.amount}"
+
+

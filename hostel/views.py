@@ -338,3 +338,17 @@ def get_overdue_payments(request):
     }
 
     return render(request, 'hostel/overdue_report.html', context)
+
+class StudentContactListView(ListView):
+    model = Student
+    template_name = 'hostel/contact_list.html'
+    context_object_name = 'students'
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get('q')
+        
+        if query:
+            queryset = queryset.filter(name__icontains=query)
+        return queryset
+    
