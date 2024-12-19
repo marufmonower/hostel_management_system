@@ -138,4 +138,13 @@ DATE_INPUT_FORMATS = [
  #   '%m/%d/%Y',  # Month/Day/Year format (e.g., 01/31/2024)
 ]
 
+# Session timeout duration (15 minutes)
+SESSION_COOKIE_AGE = 15 * 60  # 900 seconds
+
+# Extend the session expiry upon each user interaction
+SESSION_SAVE_EVERY_REQUEST = True
+
+# End the session when the browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+
 
